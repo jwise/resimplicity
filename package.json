@@ -1,6 +1,6 @@
 {
-  "version": "3.2.0",
-  "author": "Pebble Technology",
+  "version": "4.0.0",
+  "author": "Joshua Wise",
   "private": true,
   "dependencies": {},
   "keywords": [
@@ -15,14 +15,16 @@
           "type": "bitmap",
           "name": "IMAGE_MENU_ICON",
           "file": "images/menu_icon_simplicity.png"
-        }
+        },
+        { "type": "font", "name": "ROBOTO_CONDENSED_30", "file": "fonts/Roboto-Condensed.ttf", "targetPlatforms": [ "emery" ] },
+        { "type": "font", "name": "ROBOTO_BOLD_SUBSET_66", "file": "fonts/Roboto-Bold.ttf", "characterRegex": "[:0-9]", "targetPlatforms": [ "emery" ] }
       ]
     },
     "projectType": "native",
-    "uuid": "030ee5fc-518b-49e5-b9b2-0700ee92af89",
+    "uuid": "c52ee76b-63b1-4369-9d85-a8d01edb2b5e",
     "messageKeys": {},
     "enableMultiJS": false,
-    "displayName": "Simplicity",
+    "displayName": "ReSimplicity",
     "watchapp": {
       "onlyShownOnCommunication": false,
       "hiddenApp": false,
@@ -37,5 +39,5 @@
     ],
     "capabilities": []
   },
-  "name": "Simplicity"
+  "name": "ReSimplicity"
 }

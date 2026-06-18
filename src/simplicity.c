@@ -56,6 +56,59 @@ static void prv_line_layer_update_callback(Layer *layer, GContext* ctx) {
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
 }
 
+// pre-emery is 144x168; chalk is 180x180; emery is 200x228; gabbro is 260x260
+//
+// so upscale by 36% for pre-emery -> emery.  roboto condensed 28, roboto bold subset 66
+
+#if PBL_DISPLAY_HEIGHT == 168
+#  define DATE_X 8
+#  define DATE_Y 68
+#  define DATE_W 136
+#  define DATE_H 100
+#  define DATE_FONT fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21)
+#  define TIME_X 7
+#  define TIME_Y 92
+#  define TIME_W 137
+#  define TIME_H 76
+#  define TIME_FONT fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49)
+#  define LINE_X 8
+#  define LINE_Y 97
+#  define LINE_W bounds.size.w - 16
+#  define LINE_H 2
+#elif PBL_ROUND && PBL_DISPLAY_HEIGHT == 180
+#  define DATE_X bounds.origin.x
+#  define DATE_Y 68
+#  define DATE_W bounds.size.w
+#  define DATE_H 100
+#  define DATE_FONT fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21)
+#  define TIME_X bounds.origin.x
+#  define TIME_Y 92
+#  define TIME_W bounds.size.w
+#  define TIME_H 76
+#  define TIME_FONT fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49)
+#  define LINE_X 8
+#  define LINE_Y 97
+#  define LINE_W bounds.size.w - 16
+#  define LINE_H 2
+#elif PBL_RECT && PBL_DISPLAY_HEIGHT == 228
+#  define DATE_X 10
+#  define DATE_Y 92
+#  define DATE_W 185
+#  define DATE_H 100
+#  define DATE_FONT fonts_load_custom_font(resource_get_handle(RESOURCE_ID_ROBOTO_CONDENSED_30))
+#  define TIME_X 8
+#  define TIME_Y 124
+#  define TIME_W 185
+#  define TIME_H 102
+#  define TIME_FONT fonts_load_custom_font(resource_get_handle(RESOURCE_ID_ROBOTO_BOLD_SUBSET_66))
+#  define LINE_X 11
+#  define LINE_Y 131
+#  define LINE_W bounds.size.w - 22
+#  define LINE_H 2
+#else
+#  error unsupported platform
+#endif
+
 // Window Load
 static void prv_main_window_load(Window *window) {
   s_window_layer = window_get_root_layer(window);
@@ -67,29 +120,25 @@ static void prv_main_window_load(Window *window) {
   layer_add_child(s_window_layer, s_shifting_layer);
 
   // The Date
-  s_date_layer = text_layer_create(PBL_IF_ROUND_ELSE(
-    GRect(bounds.origin.x, 68, bounds.size.w, 100),
-    GRect(8, 68, 136, 100)));
+  s_date_layer = text_layer_create(GRect(DATE_X, DATE_Y, DATE_W, DATE_H));
   text_layer_set_text_alignment(s_date_layer, PBL_IF_ROUND_ELSE(
     GTextAlignmentCenter, GTextAlignmentLeft));
   text_layer_set_text_color(s_date_layer, GColorWhite);
   text_layer_set_background_color(s_date_layer, GColorClear);
-  text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
+  text_layer_set_font(s_date_layer, DATE_FONT);
   layer_add_child(s_shifting_layer, text_layer_get_layer(s_date_layer));
 
   // The Time
-  s_time_layer = text_layer_create(PBL_IF_ROUND_ELSE(
-    GRect(bounds.origin.x, 92, bounds.size.w, 76),
-    GRect(7, 92, 137, 76)));
+  s_time_layer = text_layer_create(GRect(TIME_X, TIME_Y, TIME_W, TIME_H));
   text_layer_set_text_alignment(s_time_layer, PBL_IF_ROUND_ELSE(
     GTextAlignmentCenter, GTextAlignmentLeft));
   text_layer_set_text_color(s_time_layer, GColorWhite);
   text_layer_set_background_color(s_time_layer, GColorClear);
-  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
+  text_layer_set_font(s_time_layer, TIME_FONT);
   layer_add_child(s_shifting_layer, text_layer_get_layer(s_time_layer));
 
   // The horizontal line
-  GRect line_frame = GRect(8, 97, bounds.size.w - 16, 2);
+  GRect line_frame = GRect(LINE_X, LINE_Y, LINE_W, LINE_H);
   s_line_layer = layer_create(line_frame);
   layer_set_update_proc(s_line_layer, prv_line_layer_update_callback);
   layer_add_child(s_shifting_layer, s_line_layer);
